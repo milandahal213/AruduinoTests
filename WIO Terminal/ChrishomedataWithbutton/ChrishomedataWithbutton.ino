@@ -24,7 +24,11 @@ String line = "";
 String tags[]={"Alarm","Barn","Daikin","Geo","TED","Tesla","Water","WestonSolar"};
 int ind[8];
 String holders[8];
-String _holders;
+String datetime[8];
+String data[8];
+
+String _datetime;
+String _data;
 String _title;
 int i=0;
 int screen=0;
@@ -92,20 +96,27 @@ void get_Data(){
     client.println();
   }
   else {
-     //resetFunc();
+    resetFunc();
     return;
   }
   getReply();
   
   for(int i =0;i<8;i++){
-    ind[i]=line.indexOf(tags[i]);
+    ind[i]=line.indexOf(tags[i]);                                   //getting the index of tags to split 
   }
   for(int i =0;i<8-1;i++){
-    holders[i]=line.substring(ind[i]+tags[i].length() +2,ind[i+1]);
+    holders[i]=line.substring(ind[i]+tags[i].length() +2,ind[i+1]); //splitting data after {tags} : 
   }
-  holders[7]=line.substring(ind[7]+tags[7].length()+2);
- }
- 
+  holders[7]=line.substring(ind[7]+tags[7].length()+2);             //getting the final data
+
+  for(int i =0;i<8;i++){
+    ind[i]=holders[i].indexOf(',');                                  //splitting the date and time from the data
+    datetime[i]=holders[i].substring(0,ind[i]);
+    data[i]=holders[i].substring(ind[i] + 1);
+  }
+}
+
+
 void getReply(){
   while (client.connected()) {
     line = client.readStringUntil('\z');
@@ -122,11 +133,17 @@ void show_Data(int screen){
 
 
     tft.setTextColor(TFT_GREEN);
+    tft.setTextSize(3);
     tft.drawString(_title, 5, 10);
-    tft.drawString(_holders, 5, 40);
+    tft.setTextSize(2);
+    tft.drawString(_datetime, 5, 40);
+    tft.drawString(_data, 5, 70);
     tft.setTextColor(TFT_BLACK);
+    tft.setTextSize(3);
     tft.drawString(tags[screen], 5,10);
-    tft.drawString(holders[screen], 5,40);
+    tft.setTextSize(2);
+    tft.drawString(datetime[screen], 5,40);
+    tft.drawString(data[screen], 5,70);
     _title=tags[screen];
     _holders=holders[screen];
 }
@@ -143,7 +160,7 @@ void tft_setup(){
   // Turning on the LCD backlight
   digitalWrite(LCD_BACKLIGHT, HIGH);
 
-  tft.setTextSize(2);
+
 }
 void connect_WiFi(){
 
