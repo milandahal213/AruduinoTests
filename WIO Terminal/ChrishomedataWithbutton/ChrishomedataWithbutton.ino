@@ -3,6 +3,10 @@
 #include <Arduino_JSON.h>
 #include"TFT_eSPI.h"
 #include <HttpClient.h>
+#include "RTC_SAMD51.h"
+#include <Arduino.h>
+
+
 TFT_eSPI tft;
 #define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
 
@@ -12,14 +16,24 @@ const char* ssid = "virus";
 const char* password =  "smoothie123";
 
 IPAddress server(173,76,105,19);
-int port1=80;
 
+void(* resetFunc) (void) = 0;
+int port1=80;
 int resets = 0;
 String line = "";
 String tags[]={"Alarm","Barn","Daikin","Geo","TED","Tesla","Water","WestonSolar"};
 int ind[8];
 String holders[8];
-String _holders[8];
+String _holders;
+String _title;
+int i=0;
+int screen=0;
+boolean updatescreen=false;
+DateTime now;
+int prev_time, currenttime;
+RTC_SAMD51 rtc;
+
+
 void setup() {
     Serial.begin(115200);
     while(!Serial); // Wait for Serial to be ready
@@ -27,17 +41,50 @@ void setup() {
 
     tft_setup();
     connect_WiFi();
+    
+    setupButton();
 
+    rtc.begin();
+    prev_time=rtc.now().unixtime(); 
+    get_Data();
+    show_Data(screen);
 }
 
 
 void loop() {
-  get_Data();
-  show_Data();
-  delay(300000);
+
+  currenttime=rtc.now().unixtime();
+  if(rtc.now().unixtime()-prev_time>20){
+    prev_time=rtc.now().unixtime();
+    get_Data();
+  }
+  if (digitalRead(WIO_5S_LEFT) == LOW && screen >0)   { 
+    delay(500);
+    updatescreen=true; 
+    screen=screen-1;   
+    }
+  else if (digitalRead(WIO_5S_RIGHT) == LOW && screen <7)  {
+    delay(500); 
+    updatescreen=true; 
+    screen=screen+1;   
+    }
+  if(updatescreen==true){
+    updatescreen=false;
+    show_Data(screen);
+  }
+
+
+
 }
 
- void get_Data(){
+void setupButton(){
+  pinMode(WIO_5S_UP, INPUT_PULLUP);
+  pinMode(WIO_5S_DOWN, INPUT_PULLUP);
+  pinMode(WIO_5S_LEFT, INPUT_PULLUP);
+  pinMode(WIO_5S_RIGHT, INPUT_PULLUP);
+  pinMode(WIO_5S_PRESS, INPUT_PULLUP);
+}
+void get_Data(){
   if (client.connect(server, port1)) {
     client.println("GET /~crogers/data.txt HTTP/1.0");
     client.println("Content-type: text/plain");
@@ -45,51 +92,43 @@ void loop() {
     client.println();
   }
   else {
-    connect_WiFi();
-    resets += 1;
+     //resetFunc();
     return;
   }
   getReply();
   
- 
+  for(int i =0;i<8;i++){
+    ind[i]=line.indexOf(tags[i]);
+  }
+  for(int i =0;i<8-1;i++){
+    holders[i]=line.substring(ind[i]+tags[i].length() +2,ind[i+1]);
+  }
+  holders[7]=line.substring(ind[7]+tags[7].length()+2);
  }
-
-
-
+ 
 void getReply(){
-  //reads lines until connction closed
-
-    char input;
-
   while (client.connected()) {
     line = client.readStringUntil('\z');
     break;
       }
-
   client.stop();
   //Serial.println(line);
-
 }
 
 
-void show_Data(){
 
-  Serial.println(line);
-  for(int i =0;i<8;i++){
-    ind[i]=line.indexOf(tags[i]);
-      }
-  for(int i =0;i<8-1;i++){
-    holders[i]=line.substring(ind[i],ind[i+1]);
-  }
-  for( int i=0;i <8; i++){
-    
+
+void show_Data(int screen){
+
+
     tft.setTextColor(TFT_GREEN);
-    tft.drawString(_holders[i], 5, 10*(i+1));
+    tft.drawString(_title, 5, 10);
+    tft.drawString(_holders, 5, 40);
     tft.setTextColor(TFT_BLACK);
-    tft.drawString(holders[i], 5,10*(i+1));
-    _holders[i]=holders[i];
-  }
-
+    tft.drawString(tags[screen], 5,10);
+    tft.drawString(holders[screen], 5,40);
+    _title=tags[screen];
+    _holders=holders[screen];
 }
 
 void tft_setup(){
@@ -104,7 +143,7 @@ void tft_setup(){
   // Turning on the LCD backlight
   digitalWrite(LCD_BACKLIGHT, HIGH);
 
-  tft.setTextSize(1);
+  tft.setTextSize(2);
 }
 void connect_WiFi(){
 

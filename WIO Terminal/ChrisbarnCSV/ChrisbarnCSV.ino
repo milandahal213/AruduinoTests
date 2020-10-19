@@ -15,8 +15,9 @@ IPAddress server(173,76,105,19);
 int port1=80;
 
 int resets = 0;
+char *l;
 String line = "";
-String tags[]={"Alarm","Barn","Daikin","Geo","TED","Tesla","Water","WestonSolar"};
+
 int ind[8];
 String holders[8];
 String _holders[8];
@@ -33,13 +34,13 @@ void setup() {
 
 void loop() {
   get_Data();
-  show_Data();
+  //show_Data();
   delay(300000);
 }
 
  void get_Data(){
   if (client.connect(server, port1)) {
-    client.println("GET /~crogers/data.txt HTTP/1.0");
+    client.println("GET /~crogers/data/barn.csv HTTP/1.0");
     client.println("Content-type: text/plain");
     client.println("Connection: close");
     client.println();
@@ -60,14 +61,15 @@ void getReply(){
   //reads lines until connction closed
 
     char input;
-
-  while (client.connected()) {
-    line = client.readStringUntil('\z');
-    break;
-      }
-
-  client.stop();
-  //Serial.println(line);
+int a;
+for (int i=0;i<1000;i++){
+a=client.read();
+Serial.println(a);
+}
+client.stop();
+  Serial.println(l);
+  
+  Serial.println("okay");
 
 }
 
@@ -75,20 +77,7 @@ void getReply(){
 void show_Data(){
 
   Serial.println(line);
-  for(int i =0;i<8;i++){
-    ind[i]=line.indexOf(tags[i]);
-      }
-  for(int i =0;i<8-1;i++){
-    holders[i]=line.substring(ind[i],ind[i+1]);
-  }
-  for( int i=0;i <8; i++){
-    
-    tft.setTextColor(TFT_GREEN);
-    tft.drawString(_holders[i], 5, 10*(i+1));
-    tft.setTextColor(TFT_BLACK);
-    tft.drawString(holders[i], 5,10*(i+1));
-    _holders[i]=holders[i];
-  }
+  
 
 }
 
