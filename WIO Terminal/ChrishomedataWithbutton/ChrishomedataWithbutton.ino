@@ -40,7 +40,7 @@ RTC_SAMD51 rtc;
 
 void setup() {
     Serial.begin(115200);
-    while(!Serial); // Wait for Serial to be ready
+    //while(!Serial); // Wait for Serial to be ready
     delay(1000);
 
     tft_setup();
@@ -145,7 +145,8 @@ void show_Data(int screen){
     tft.drawString(datetime[screen], 5,40);
     tft.drawString(data[screen], 5,70);
     _title=tags[screen];
-    _holders=holders[screen];
+    _datetime=datetime[screen];
+    _data=data[screen];
 }
 
 void tft_setup(){
