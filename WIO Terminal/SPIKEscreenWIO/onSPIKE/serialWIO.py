@@ -19,6 +19,9 @@ def text(string,x,y):
     ret=call_function("drawString",[string,x,y])
     return ret
 
+def drawLine(x1,y1,x2,y2,c):
+    ret=call_function("drawLine",[x1,y1,x2,y2,c])
+    return ret
 
 def call_function(fname,arg):
     try:
