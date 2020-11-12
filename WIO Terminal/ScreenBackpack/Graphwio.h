@@ -17,7 +17,7 @@ class Graphwio
     Graphwio(int baudrate);
     void start();
     void tft_setup();
-    void read_from_SPIKE();
+    void lookout();
     void decode_message(String request);
     private:
     int _baudrate;

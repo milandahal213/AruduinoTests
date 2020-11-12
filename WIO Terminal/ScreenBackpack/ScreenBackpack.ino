@@ -10,7 +10,7 @@ test.start();
 }
 
 void loop() {
- test.read_from_SPIKE();
+ test.lookout();
 
  
  }

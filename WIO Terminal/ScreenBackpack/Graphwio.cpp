@@ -48,7 +48,7 @@ void Graphwio::tft_setup(){
 
  
 
-void Graphwio::read_from_SPIKE(){
+void Graphwio::lookout(){
   if (Serial.available() > 0){
     prev_time=rtc.now().unixtime();
     do{
