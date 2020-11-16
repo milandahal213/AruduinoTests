@@ -96,9 +96,8 @@ class screen:
                 time.sleep(0.01)
             print(_waitACK.decode("UTF-8"))
             if(_waitACK.decode("UTF-8").find("True")<0):
-                return False
+                raise Exception("Arduino Error")
             else:
                 return True
         except:
-            print("ran into exception:")
-            return False
+            raise Exception("Python Error")
