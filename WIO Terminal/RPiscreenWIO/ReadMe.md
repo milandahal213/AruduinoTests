@@ -5,7 +5,13 @@ Download and save the wioscreen folder on your /home/pi folder. Access the libra
 <code>
   
 from wioscreen import WIO   
-
-WIO.text("Milan",10,10)
-
+w=WIO.screen("/dev/ttyACM0")
+w.drawString("Milan",10,10)
+w.drawRect(40,50,90,100,32)
 </code>
+
+colors are 16 bit integers
+pure blue is 31
+pure green is 2016
+pure red is 63488
+add the numbers to get the color of your choice
