@@ -7,7 +7,6 @@ TFT_eSPI tft;
 #define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
 
 WiFiClient client;
-
 const char* ssid = "virus";
 const char* password =  "smoothie123";
 
@@ -39,7 +38,7 @@ void loop() {
 
  void get_Data(){
   if (client.connect(server, port1)) {
-    client.println("GET /~crogers/data.txt HTTP/1.0");
+    client.println("GET /~crogers/data.html HTTP/1.0");
     client.println("Content-type: text/plain");
     client.println("Connection: close");
     client.println();

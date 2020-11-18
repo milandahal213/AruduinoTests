@@ -18,6 +18,7 @@ RTC_SAMD51 rtc;
   String loopCount="";
   int prev_time, currenttime;
   String data="";
+  int func=0;
 
 Graphwio::Graphwio(int baudrate) {
     _baudrate=baudrate;
@@ -75,50 +76,65 @@ void Graphwio::decode_message(String request){
   request=request.substring(0,request.length()-4); //4 is to remove "done"
   JSONVar myObject = JSON.parse(request);
 
-  function = myObject["function"];
+  func = atoi((const char*) myObject["function"]);
   lib=myObject["lib"];
 
   if(lib=="graphics"){
-  if(function=="drawString") {
-    tft.drawString((const char*) myObject["arg"][0],atoi((const char*) myObject["arg"][1]),atoi((const char*) myObject["arg"][2]));
-    }
-  else if(function== "fillScreen"){
-    tft.fillScreen(atoi((const char*) myObject["arg"][0]));
-  }
-  else if(function== "setTextSize"){
-    tft.setTextSize(atoi((const char*) myObject["arg"][0]));
-   }
-   else if(function=="drawLine"){
-    tft.drawLine(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]));
-   }
-   else if(function=="drawPixel"){
-   tft.drawPixel(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]));
-   }
 
-   else if(function=="drawRect"){
+    switch (func){
+    case 1: //"drawString"
+    tft.drawString((const char*) myObject["arg"][0],atoi((const char*) myObject["arg"][1]),atoi((const char*) myObject["arg"][2]));
+    break;
+    
+    case 2: //"fillScreen"
+    tft.fillScreen(atoi((const char*) myObject["arg"][0]));
+    break;
+    
+    case 3: //"setTextSize"
+    tft.setTextSize(atoi((const char*) myObject["arg"][0]));
+    break;
+    
+    case 4: //"drawLine"
+    tft.drawLine(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]));
+    break;
+    
+   case 5: //"drawPixel"
+   tft.drawPixel(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]));
+   break;
+    
+   case 6: //"drawRect"
    tft.drawRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]));
-   }
-   else if(function=="fillRect"){
+   
+   case 7: //"fillRect"
    tft.fillRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]));
-      }
-   else if(function=="drawCircle"){
+    break;
+      
+   case 8: //"drawCircle"
    tft.drawCircle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]));
-      }
-   else if(function=="fillCircle"){
+   break;
+       
+   case 9: //"fillCircle"
    tft.fillCircle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]));
-      }
-   else if(function=="drawTriangle"){
+    break;
+      
+   case 10: //"drawTriangle"
    tft.drawTriangle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]), atoi((const char*) myObject["arg"][6]));
-       }
-   else if(function=="fillTriangle"){
+      break;
+     
+   case 11: //"fillTriangle"
     tft.fillTriangle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]), atoi((const char*) myObject["arg"][6]));
-     }
-   else if(function=="drawRoundRect"){
+    break;
+     
+   case 12: //"drawRoundRect"
   tft.drawRoundRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]));
-     }
-   else if(function=="fillRoundRect"){
+    break;
+     
+   case 13: //"fillRoundRect")
   tft.fillRoundRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]));
-   }
+   break;
+
+    default: 
+    break;
   }
-  
+  }
 }
