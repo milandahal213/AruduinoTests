@@ -157,7 +157,6 @@ void Wioterminal::decode_message(String request){
   else if(lib=="wifi"){
     switch (func){
     case 1: //"Connect_wifi"
-    tft.drawString("this was called first",10,10);
     WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -168,8 +167,7 @@ void Wioterminal::decode_message(String request){
     break;
     
     case 2: //"get"
-        tft.drawString("this was called",10,20);
-        _url=(const char*) myObject["arg"][0];
+         _url=(const char*) myObject["arg"][0];
         if (!client.connect((const char*) myObject["arg"][0], atoi((const char*) myObject["arg"][1])))
           {
           Serial.println("connection failed");
@@ -181,7 +179,7 @@ void Wioterminal::decode_message(String request){
           timeout = millis();
           while (client.available() == 0) {
           if (millis() - timeout > 5000) {
-              Serial.println(">>> Client Timeout !");
+              _ret=">>> Client Timeout !";
               client.stop();
             }
            }
@@ -189,8 +187,9 @@ void Wioterminal::decode_message(String request){
          while (client.available())
             {
             line += client.readStringUntil('\r');
+            _ret+=line;
              }
-          _ret=line;
+  
           break;
      
           default: 
