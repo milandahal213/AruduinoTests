@@ -191,11 +191,11 @@ void Wioterminal::decode_message(String request){
           (String(_url).substring(f[2])).toCharArray(_path,strlen(_url)-f[2]+1);
          
          //_host="173.76.105.19";
-         tft.fillScreen(32);
+          tft.fillScreen(32);
           tft.drawString(_host,10,140);
           tft.drawString(_proto,10,180);
           tft.drawString(_path,10,200);
-          tft.drawString(_cport,10,160);
+    
            if(strcmp(_proto,"https")==0){
               _port=443;
               tft.drawString("port 443 set",80,20);
@@ -212,7 +212,7 @@ void Wioterminal::decode_message(String request){
           if (!client.connect(_host, _port))
           {
           Serial.println("connection failed");
-          tft.drawString("Connectio failed dd00e",50,10);
+          tft.drawString("Connectio failed",50,10);
           }
            client.println("GET " + String(_url) +" HTTP/1.0");
           client.println("Host: " + String(_host));
@@ -224,7 +224,6 @@ void Wioterminal::decode_message(String request){
           if (millis() - timeout > 5000) {
               _ret=">>> Client Timeout !";
               client.stop();
-              tft.drawString("I am stuck here",10,60);
               break;
             }
            }
@@ -232,7 +231,6 @@ void Wioterminal::decode_message(String request){
          while (client.available())
             {
             line+= client.readStringUntil('\r');
-            tft.drawString("I am stuck here",10,10);
             }
           _ret+=line;
           break;
