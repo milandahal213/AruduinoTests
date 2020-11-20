@@ -52,6 +52,7 @@ void Wioterminal::tft_setup(){
 
 void Wioterminal::lookout(){
   if (Serial.available() > 0){
+    
     prev_time=rtc.now().unixtime();
     do{
       beginning=Serial.readString();
@@ -63,6 +64,7 @@ void Wioterminal::lookout(){
         Serial.write("False");
       }
     else {
+         _ret=" ";
          decode_message(ending);
          _ret=_ret+"True";
         Serial.println(_ret);
@@ -75,6 +77,7 @@ void Wioterminal::decode_message(String request){
   String function;
   String lib;
   String arg;
+  
   request=request.substring(0,request.length()-4); //4 is to remove "done"
   JSONVar myObject = JSON.parse(request);
 
@@ -155,24 +158,60 @@ void Wioterminal::decode_message(String request){
   }
 
   else if(lib=="wifi"){
+
+     int m,n;
     switch (func){
     case 1: //"Connect_wifi"
+    
     WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
     while (WiFi.status() != WL_CONNECTED)
     {
         WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
-        
+       
     }
     _ret="Connected";
     break;
     
     case 2: //"get"
+        line="";
          _url=(const char*) myObject["arg"][0];
-        if (!client.connect((const char*) myObject["arg"][0], atoi((const char*) myObject["arg"][1])))
+
+         for(m=0,n=0;m<strlen(_url);m++){
+            if(_url[m]=='/'){
+              f[n]=m;
+              n+=1;
+              if(n==3){
+                break;
+              }
+            }
+          }
+          (String(_url).substring(0,f[0])).toCharArray(_proto,f[0]); 
+          (String(_url).substring(f[1]+1,f[2])).toCharArray(_host,f[2]-f[1]);
+          (String(_url).substring(f[2])).toCharArray(_path,strlen(_url)-f[2]);
+         
+         //_host="173.76.105.19";
+          tft.drawString(_host,10,140);
+          tft.drawString(_proto,10,180);
+          tft.drawString(_path,10,200);
+           if(_proto=="https"){
+              _port=443;
+              tft.drawString("port 443 set",80,20);
+           }
+           else if (_proto=="http"){
+              _port=80;
+              tft.drawString("port 80 set",10,20);
+           }
+           else{
+            _ret="Use http or https with your url";
+            break;
+            }
+
+            
+          if (!client.connect(_host, _port))
           {
           Serial.println("connection failed");
           }
-          client.println("GET /~crogers/data.html HTTP/1.0");
+          client.println("GET " + String(_path) +" HTTP/1.0");
           client.println("Content-type: text/plain");
           client.println( "Connection: close");
           client.println();
@@ -181,15 +220,17 @@ void Wioterminal::decode_message(String request){
           if (millis() - timeout > 5000) {
               _ret=">>> Client Timeout !";
               client.stop();
+              tft.drawString("I am stuck here",10,60);
+              break;
             }
            }
            taketime = millis();
          while (client.available())
             {
-            line += client.readStringUntil('\r');
-            _ret+=line;
-             }
-  
+            line+= client.readStringUntil('\r');
+            tft.drawString("I am stuck here",10,10);
+            }
+          _ret+=line;
           break;
      
           default: 

@@ -26,7 +26,11 @@ class Wioterminal
     char *_password;
     const char *host;
     int _port;
+    int f[3];
     const char *_url;
+    char _proto[5];
+    char _host[30];
+    char _path[30];
     String line;
   unsigned long timeout;
   uint32_t taketime;
