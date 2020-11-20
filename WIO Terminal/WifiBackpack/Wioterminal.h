@@ -26,9 +26,10 @@ class Wioterminal
     char *_password;
     const char *host;
     int _port;
+    char *_cport;
     int f[3];
     const char *_url;
-    char _proto[5];
+    char _proto[10];
     char _host[30];
     char _path[30];
     String line;
