@@ -1,9 +1,12 @@
 #include "Wioterminal.h"
 #include <rpcWiFi.h>
+#include <HTTPClient.h>
+
 #include "TFT_eSPI.h"
 #include "RTC_SAMD51.h"
 #include <Arduino_JSON.h>
 
+HTTPClient http;
 
 #define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
 
@@ -11,6 +14,7 @@ TFT_eSPI tft;
 DateTime now;
 RTC_SAMD51 rtc;
 WiFiClient client;
+//WiFiSSLClient client1;
 int i =1;
 String check="";
 String beginning="";
@@ -25,8 +29,8 @@ Wioterminal::Wioterminal(int baudrate) {
 }
 
 void Wioterminal::start() {
-    while (!Serial) {
-    Serial.begin(_baudrate);
+    while (!Serial1) {
+    Serial1.begin(_baudrate);
     };
     rtc.begin();
     tft_setup();
@@ -48,29 +52,45 @@ void Wioterminal::tft_setup(){
   tft.setTextSize(1);
 }
 
- 
+void Wioterminal::lookout1(){
+  _ret=" ";
+  Serial1.println("here we go");
+  char *ending[]= { "{\"function\": \"1\",\"lib\":\"wifi\",\"arg\":[ \"virus\",\"smoothie123\"]}done",
+                    "{\"function\": \"2\",\"lib\":\"wifi\",\"arg\":[ \"http://api.icndb.com/jokes/random\"]}done",
+                     "{\"function\": \"2\",\"lib\":\"wifi\",\"arg\":[ \"http://173.76.105.19/~crogers/data.html\"]}done",
+                     "{\"function\": \"2\",\"lib\":\"wifi\",\"arg\":[ \"http://www.worldtimeapi.org/api/ip\"]}done"};
+  for(int i=0;i<sizeof(ending);i++){                
+  request= String(ending[i]);
+  request=request.substring(0,request.length()-4); //4 is to remove "done"
+  Serial1.println(request);
+  decode_message(request);
+  Serial1.println(_ret);
+  }
+}
 
 void Wioterminal::lookout(){
-  if (Serial.available() > 0){
+  if (Serial1.available() > 0){
     
     prev_time=rtc.now().unixtime();
     do{
-      beginning=Serial.readString();
+      beginning=Serial1.readString();
       ending+=beginning;
       }
     while(ending.indexOf("done")<0&&(rtc.now().unixtime()-prev_time)<2);   
     if(ending.indexOf("done")<0)
       {
-        Serial.write("False");
+        Serial1.write("False");
       }
     else {
          _ret=" ";
+         request= String(ending);
+         request=request.substring(0,request.length()-4);  //4 is to remove "done"
          decode_message(ending);
          _ret=_ret+"True";
-        Serial.println(_ret);
+        Serial1.println(_ret);
       }
       ending="";
-      Serial.flush();
+      Serial1.flush();
     }
 }
 void Wioterminal::decode_message(String request){
@@ -78,7 +98,7 @@ void Wioterminal::decode_message(String request){
   String lib;
   String arg;
   
-  request=request.substring(0,request.length()-4); //4 is to remove "done"
+  //request=request.substring(0,request.length()-4); //4 is to remove "done"
   JSONVar myObject = JSON.parse(request);
 
   func = atoi((const char*) myObject["function"]);
@@ -211,7 +231,7 @@ void Wioterminal::decode_message(String request){
             
           if (!client.connect(_host, _port))
           {
-          Serial.println("connection failed");
+          Serial1.println("connection failed");
           tft.drawString("Connectio failed",50,10);
           }
            client.println("GET " + String(_url) +" HTTP/1.0");

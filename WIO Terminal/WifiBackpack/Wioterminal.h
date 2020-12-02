@@ -3,6 +3,8 @@
 
 #include "Arduino.h"
 #include <rpcWiFi.h>
+#include <HTTPClient.h>
+
 
 #include"TFT_eSPI.h"
 #include "RTC_SAMD51.h"
@@ -18,8 +20,10 @@ class Wioterminal
     void start();
     void tft_setup();
     void lookout();
+    void lookout1();
     void decode_message(String request);
     private:
+    String request;
     String _ret;
     int _baudrate;
     char *_ssid;
