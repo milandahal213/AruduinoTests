@@ -6,11 +6,12 @@ Wioterminal test(115200);
 void setup() {
 
 test.start();
-test.lookout();
+
 
 }
 
 void loop() {
- 
+ test.checkwifi();
+ test.lookout();
  }
  
