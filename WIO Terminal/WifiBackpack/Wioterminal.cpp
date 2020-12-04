@@ -291,10 +291,6 @@ else if(lib=="wifi"){
 
       if(strcmp(_proto,"https")==0){
         _port=443;
-
-        tft.drawString(_proto,50,10);
-        tft.drawString(_path,50,20);
-        tft.drawString(_host,50,40);
         if (!client.connect(_host, _port))
           {
           Serial.println("connection failed");
@@ -320,7 +316,7 @@ else if(lib=="wifi"){
           line+= client.readStringUntil('\r');
           }
         _ret+=line;
-        break;
+        
         } 
 
         
@@ -350,13 +346,13 @@ else if(lib=="wifi"){
           line+= client1.readStringUntil('\r');
           }
         _ret+=line;
-        break;
+        
         }  
       else{
         _ret="Use http or https with your url";
-        break;
         }
-      default: 
+      break;
+    default: 
       break;
     }
   }
