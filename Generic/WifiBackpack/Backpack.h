@@ -1,5 +1,5 @@
-#ifndef Wioterminal_h
-#define Wioterminal_h
+#ifndef Backpack_h
+#define Backpack_h
 
 #include "Arduino.h"
 #include <rpcWiFi.h>
