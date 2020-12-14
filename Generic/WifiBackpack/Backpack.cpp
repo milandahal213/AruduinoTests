@@ -1,27 +1,29 @@
 #include "Backpack.h"
-#include <rpcWiFi.h>
-#include <WiFiClientSecure.h>
-#include "TFT_eSPI.h"
-#include "RTC_SAMD51.h"
-#include <Arduino_JSON.h>
+#include <rpcWiFi.h>            // change this to the wifi library for your board
+#include <WiFiClientSecure.h>   // change this to the wifi Client for your board for SSL
+#include "TFT_eSPI.h"           // change this to the LCD library for your board
+#include "RTC_SAMD51.h"         // change this to the RTC library
+#include <Seeed_FS.h>           // change this to the File system library for your board
+#include "SD/Seeed_SD.h"        // SD card library for your board
 
 #include <SPI.h>
-#include <Seeed_FS.h>
-#include "SD/Seeed_SD.h"
- 
-File myFile;
 
+#include <Arduino_JSON.h>
+
+
+ // create objects 
+File myFile;                  
 WiFiClientSecure client;
 WiFiClient client1;
 JSONVar wifi_cred;
-
-#define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
-
 TFT_eSPI tft;
 DateTime now;
 RTC_SAMD51 rtc;
 
-//WiFiSSLClient client1;
+
+#define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
+
+
 int i =1;
 String check="";
 String beginning="";
@@ -69,11 +71,11 @@ const unsigned char wifi_disconnected[]={
 0x00  , 0x80  , 0x01  , 0x00  ,0x00  , 0x00  , 0x00  , 0x00  ,
 };
 
-Wioterminal::Wioterminal(int baudrate) {
+Backpack::Backpack(int baudrate) {
     _baudrate=baudrate;
 }
 
-void Wioterminal::start() {
+void Backpack::start() {
     while (!Serial) {
     Serial.begin(_baudrate);
     };
@@ -86,7 +88,7 @@ void Wioterminal::start() {
     checkwifi();
 }
 
-void Wioterminal::checkwifi(){
+void Backpack::checkwifi(){
   if(WiFi.status() != WL_CONNECTED)
         { 
           tft.drawXBitmap(260,13, wifi_disconnected, 32, 32, TFT_RED);
@@ -94,7 +96,7 @@ void Wioterminal::checkwifi(){
          }
 }
 
-void Wioterminal::connectwifi(){
+void Backpack::connectwifi(){
   myFile = SD.open("wifi.txt", FILE_READ);
     if (myFile) {
         while (myFile.available()) {
@@ -115,7 +117,7 @@ void Wioterminal::connectwifi(){
     }
 }
 
-void Wioterminal::tft_setup(){
+void Backpack::tft_setup(){
   tft.begin();
   tft.setRotation(3);
   tft.fillScreen(TFT_GREEN);
@@ -131,7 +133,7 @@ void Wioterminal::tft_setup(){
 }
 
 
-void Wioterminal::lookout(){
+void Backpack::lookout(){
   if (Serial.available() > 0){
     
     prev_time=rtc.now().unixtime();
@@ -156,7 +158,7 @@ void Wioterminal::lookout(){
       Serial.flush();
     }
 }
-void Wioterminal::decode_message(String request){
+void Backpack::decode_message(String request){
   String function;
   String lib;
   String arg;

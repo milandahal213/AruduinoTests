@@ -2,21 +2,11 @@
 #define Backpack_h
 
 #include "Arduino.h"
-#include <rpcWiFi.h>
-#include <HTTPClient.h>
 
-
-#include"TFT_eSPI.h"
-#include "RTC_SAMD51.h"
-
-#include <Arduino_JSON.h>
-
-#define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
-
-class Wioterminal
+class Backpack
 {
   public:
-    Wioterminal(int baudrate);
+    Backpack(int baudrate);
     void start();
     void checkwifi();
     void connectwifi();
