@@ -586,6 +586,7 @@ void showScore(){
 
     while(digitalRead(WIO_KEY_A) == HIGH);
     tft.setTextSize(2);
+    tft.fillScreen(TFT_GREEN);
     life=3;
     score=0;
   }
