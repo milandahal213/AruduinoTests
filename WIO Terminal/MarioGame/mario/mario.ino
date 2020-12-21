@@ -444,9 +444,13 @@ const unsigned char mario_yellow[] = {
   pinMode(WIO_5S_PRESS, INPUT_PULLUP);
   pinMode(WIO_KEY_A, INPUT_PULLUP);
   drawMario();
-
-   while(digitalRead(WIO_KEY_A) == HIGH);
-
+  tft.setTextSize(3);
+  tft.drawString("SUPER MARIO",50,10);
+  tft.setTextSize(2);
+  tft.drawString("milan's version",50,40);
+  while(digitalRead(WIO_KEY_A) == HIGH);
+  tft.fillScreen(TFT_GREEN);
+  drawMario();
   }
 
 
