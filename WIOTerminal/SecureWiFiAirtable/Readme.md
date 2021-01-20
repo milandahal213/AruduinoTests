@@ -17,19 +17,19 @@
 </br>
 </br> 
 
-![sign up screen](/WIO Terminal/SecureWiFiAirtable/images/signup.png)![sign in screen](/Lesson_5/images/signin.png)
+![sign up screen](/WIOTerminal/SecureWiFiAirtable/images/signup.png)![sign in screen](/Lesson_5/images/signin.png)
 
 <h3> 3. Click on Add a base and Start from scratch   </h3>     
 
-![add base screen](/WIO Terminal/SecureWiFiAirtable/images/addbase.png)
+![add base screen](/WIOTerminal/SecureWiFiAirtable/images/addbase.png)
 
 <h3> and give it a suitable name</h3> 
 
-![name base screen](/WIO Terminal/SecureWiFiAirtable/images/namebase.png)
+![name base screen](/WIOTerminal/SecureWiFiAirtable/images/namebase.png)
         
 <h3> 4. This will open up your new document . Note the names of the Table and Fields </h3>
         
-![table view screen](/Lesson_5/images/tableview.png)
+![table view screen](/LWIOTerminal/SecureWiFiAirtable/images/tableview.png)
 </details>
 
 
@@ -39,11 +39,11 @@
 
 <h3> 1. Go to https://airtable.com/api </h3>
 
-![api welcome screen](/WIO Terminal/SecureWiFiAirtable/images/apiwelcome.png)
+![api welcome screen](/WIOTerminal/SecureWiFiAirtable/images/apiwelcome.png)
 
 <h3> 2. Click on your project name to reveal the api page. Copy the Base ID and replace the "ATdocID" in secrets.py with this string </h3>
 
-![api page screen](/WIO Terminal/SecureWiFiAirtable/images/apipage.png)
+![api page screen](/WIOTerminal/SecureWiFiAirtable/images/apipage.png)
 
 </details>
 
@@ -55,10 +55,10 @@
 
 <h3> 1. Go to https://airtable.com/account and click Generate API Key</h3>
 
-![api welcome screen](/WIO Terminal/SecureWiFiAirtable/images/apikey1.png)
+![api welcome screen](/WIOTerminal/SecureWiFiAirtable/images/apikey1.png)
 
 <h3> 2. Copy the API Key and replace the "ATappkey" in secrets.py with this string. Do not share this string.</h3>
 
-![api welcome screen](/WIO Terminal/SecureWiFiAirtable/images/apikey2.png)
+![api welcome screen](/WIOTerminal/SecureWiFiAirtable/images/apikey2.png)
 
 </details>
