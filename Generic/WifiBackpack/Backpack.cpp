@@ -1,3 +1,7 @@
+#include"Graphics.h"
+Graphics graph;
+
+
 #include "Backpack.h"
 #include <rpcWiFi.h>            // change this to the wifi library for your board
 #include <WiFiClientSecure.h>   // change this to the wifi Client for your board for SSL
@@ -5,7 +9,6 @@
 #include "RTC_SAMD51.h"         // change this to the RTC library
 #include <Seeed_FS.h>           // change this to the File system library for your board
 #include "SD/Seeed_SD.h"        // SD card library for your board
-
 #include <SPI.h>
 
 #include <Arduino_JSON.h>
@@ -170,76 +173,8 @@ void Backpack::decode_message(String request){
   lib=myObject["lib"];
 
   if(lib=="graphics"){
-
-    switch (func){
-      case 1: //"drawString"
-      tft.drawString((const char*) myObject["arg"][0],atoi((const char*) myObject["arg"][1]),atoi((const char*) myObject["arg"][2]));
-      _ret="True";
-      break;
-      
-      case 2: //"fillScreen"
-      tft.fillScreen(atoi((const char*) myObject["arg"][0]));
-      _ret="True";
-      break;
-      
-      case 3: //"setTextSize"
-      tft.setTextSize(atoi((const char*) myObject["arg"][0]));
-      _ret="True";
-      break;
-      
-      case 4: //"drawLine"
-      tft.drawLine(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]));
-      _ret="True";    
-      break;
-      
-     case 5: //"drawPixel"
-     tft.drawPixel(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]));
-     _ret="True";
-     break;
-      
-     case 6: //"drawRect"
-     tft.drawRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]));
-     _ret="True";
-     break;
-     
-     case 7: //"fillRect"
-     tft.fillRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]));
-     _ret="True";
-     break;
-        
-     case 8: //"drawCircle"
-     tft.drawCircle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]));
-     _ret="True";
-     break;
-         
-     case 9: //"fillCircle"
-     tft.fillCircle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]));
-     _ret="True";
-     break;
-        
-     case 10: //"drawTriangle"
-     tft.drawTriangle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]), atoi((const char*) myObject["arg"][6]));
-     _ret="True";
-     break;
-       
-     case 11: //"fillTriangle"
-      tft.fillTriangle(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]), atoi((const char*) myObject["arg"][6]));
-      _ret="True";
-      break;
-       
-     case 12: //"drawRoundRect"
-     tft.drawRoundRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]));
-     _ret="True";
-     break;
-       
-     case 13: //"fillRoundRect")
-     tft.fillRoundRect(atoi((const char*) myObject["arg"][0]), atoi((const char*) myObject["arg"][1]), atoi((const char*) myObject["arg"][2]), atoi((const char*) myObject["arg"][3]), atoi((const char*) myObject["arg"][4]), atoi((const char*) myObject["arg"][5]));
-     _ret="True";
-     break;
-  
-      default: 
-      break;
-    }
+    _ret=graph.ExGraph(func, request);
+   
   }
 
 else if(lib=="wifi"){

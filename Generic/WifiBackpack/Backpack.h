@@ -1,6 +1,8 @@
 #ifndef Backpack_h
 #define Backpack_h
 
+#include "Graphics.h"
+
 #include "Arduino.h"
 
 class Backpack
@@ -33,6 +35,7 @@ class Backpack
     String line;
   unsigned long timeout;
   uint32_t taketime;
+  
 
 };
 

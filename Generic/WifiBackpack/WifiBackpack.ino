@@ -1,17 +1,14 @@
 
 #include "Backpack.h"
 
-Backpack test(115200);
+Backpack backpack(115200);
   
 void setup() {
-
-test.start();
-
-
-}
+  backpack.start();
+  }
 
 void loop() {
- test.checkwifi();
- test.lookout();
+ backpack.checkwifi();
+ backpack.lookout();
  }
  
