@@ -4,10 +4,6 @@ create a secrets.h file with the following contents
 #define SECRET_SSID "your wifi ssid"
 #define SECRET_PASS "your wifi password"
 
-
-
-
-
 *****************************/
 #include "secrets.h"
 #include "AtWiFi.h"
@@ -22,7 +18,7 @@ TFT_eSPI tft;
 WiFiClient client;
 
 
-IPAddress server(173,76,105,19);
+IPAddress server();//server address separated by commas like (1,7,105,19);
 int port1=80;
 
 int resets = 0;
