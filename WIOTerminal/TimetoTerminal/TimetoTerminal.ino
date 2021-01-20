@@ -7,18 +7,20 @@ create a secrets.h file with the following contents
 ****************************/
 #include "secrets.h"
 
-#include "AtWiFi.h"
+#include <rpcWiFi.h>
+#include <WiFiClientSecure.h>
+#include <HTTPClient.h>
+
 #include <WiFiClientSecure.h>
 #include <Arduino_JSON.h>
 #include"TFT_eSPI.h"
 TFT_eSPI tft;
 #define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
 
-WiFiClientSecure client;
-
+WiFiClient client;
 char timeserver[] = "worldtimeapi.org";   // time website
-int port = 443;
-String  now, date, previous;
+int port = 80;
+String  now1, date, previous;
 int resets = 0;
 String line = "";
 
@@ -29,7 +31,7 @@ void setup() {
     delay(1000);
 
     tft_setup();
-
+    connect_WiFi();
 }
 
 
@@ -40,19 +42,18 @@ void loop() {
 }
  
 void get_Time(){
-  if (client.connect(timeserver, port)) {
-    client.println("GET /api/ip HTTP/1.1");
+   while (!client.connect(timeserver, port)) {
+        Serial.println("Failed to connect. trying again in 10 sec...");
+        delay(10000);
+    } 
+Serial.println("CNTED");
+    client.println("GET /api/ip HTTP/1.0");
     client.println("Host: worldtimeapi.org");
     client.println("Content-type:application/json");
     client.println("Connection: close");
     client.println();
-  }
-  else {
-    connect_WiFi();
-    resets += 1;
-    return;
-  }
-  getReply();
+    getReply();
+
   String reply = "";
   JSONVar myObject = JSON.parse(line);
   reply = myObject["datetime"];
@@ -60,20 +61,36 @@ void get_Time(){
   int end = reply.indexOf(':');  //finds location of hours
   end = reply.indexOf(':',end+1);  //finds location of minutes
   date = reply.substring(5, start-1);   
-  now = reply.substring(start, end);   
-  Serial.println(now);
+  now1 = reply.substring(start, end);   
+  Serial.println(now1);
  
   }
 
 void getReply(){
   //reads lines until connction closed
+while (client.connected()) {
+            line="";
+            String line = client.readStringUntil('\n');
+            if (line == "\r") {
+                Serial.println("headers received");
+                break;
+            }
+        }
+        // if there are incoming bytes available
+        // from the server, read them and print them:
+        while (client.available()) {
+            char c = client.read();
+            if (c == '\n') {
+                Serial.write('\r');
+              
+            }
 
-  while (client.connected()) {
-    line = client.readStringUntil('\n');
-  }
-  Serial.println("disconnecting from server.");
-  client.stop();
-  //Serial.println(line);
+            line+=c;
+        }
+        client.stop();
+    
+    Serial.println("Waiting 5 seconds before restarting...");
+    delay(5000);
 }
 void connect_WiFi(){
 // SECRET_SSID, SECRET_PASS defined in secrets.h  
@@ -95,8 +112,8 @@ void show_Time(){
   tft.setTextColor(TFT_GREEN);
   tft.drawString(previous, 5, 10);
   tft.setTextColor(TFT_WHITE);
-  tft.drawString(now, 5, 10);
-  previous=now;
+  tft.drawString(now1, 5, 10);
+  previous=now1;
 }
 
 void tft_setup(){
