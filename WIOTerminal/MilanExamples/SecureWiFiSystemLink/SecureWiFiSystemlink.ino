@@ -18,7 +18,7 @@ WiFiClientSecure client;
 
 char host[] = "api.systemlinkcloud.com"; // Server URL
 int port = 443;
-
+String line="";
 void setup() {
     Serial.begin(115200);
     Connect();
@@ -28,9 +28,9 @@ void setup() {
 }
 
 void loop() {
-    PutSL("test1","STRING","site");
+    PutSL("test1","STRING","site"); //this will update the systemlink tag - second argument can be NUMBER, BOOLEAN, or STRING (depending on type of tag)
     GetReply();
-    GetSL("test1");
+    GetSL("test1"); //this will get the value of systemlink tag
     GetReply();
     delay(10*1000);
   
@@ -109,8 +109,8 @@ void PutSL(String tag, String Type, String Value) {
 
 void GetReply() {
     while (client.connected()) {
-            String line = client.readStringUntil('\n');
-            Serial.println(line);
+            line="";
+            line = client.readStringUntil('\n');
             if (line == "\r") {
                 Serial.println("headers received");
                 break;
@@ -123,10 +123,10 @@ void GetReply() {
             if (c == '\n') {
                 Serial.write('\r');
             }
+            line+=c;
             Serial.write(c);
         }
-        client.stop();
-    
+    client.stop();
     Serial.println("Waiting 5 seconds before restarting...");
     delay(5000);
 }
