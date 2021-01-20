@@ -8,7 +8,7 @@
 </br>
 </br> 
 
-![login screen](/WIO Terminal/SecureWiFiAirtable/images/airtable_welcome.png)
+![login screen](/"WIO Terminal"/SecureWiFiAirtable/images/airtable_welcome.png)
 
 </br>
 </br>
