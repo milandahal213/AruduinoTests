@@ -1,3 +1,6 @@
+Have not been updated. will not work!! 
+
+
 Download and save the wioscreen folder on your /home/pi folder. Access the library by importing wioscreen on python. Make sure you are running [this](https://github.com/milandahal213/AruduinoTests/tree/master/WIOTerminal/SPIKEscreenWIO/on%20WIO) Arduino code on WIO Terminal. Connect the WIO Terminal on one of the USB ports and run the following code on your Pi.
 
 
