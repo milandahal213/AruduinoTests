@@ -1,3 +1,12 @@
+/*****************************
+create a secrets.h file with the following contents
+
+#define SECRET_SSID "your wifi ssid"
+#define SECRET_PASS "your wifi password"
+
+*****************************/
+#include "secrets.h"
+
 #include "AtWiFi.h"
 #include <WiFiClientSecure.h>
 #include <Arduino_JSON.h>
@@ -12,11 +21,7 @@ TFT_eSPI tft;
 
 WiFiClient client;
 
-const char* ssid = "virus";
-const char* password =  "smoothie123";
-
-IPAddress server(173,76,105,19);
-
+IPAddress server();//server address separated by commas like (1,7,105,19);
 void(* resetFunc) (void) = 0;
 int port1=80;
 int resets = 0;
@@ -164,16 +169,17 @@ void tft_setup(){
 
 }
 void connect_WiFi(){
-
-   WiFi.mode(WIFI_STA);
-   WiFi.disconnect();
-   delay(2000);
-   WiFi.begin(ssid, password);
-   while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
-        Serial.println("Connecting to WiFi..");
+// SECRET_SSID, SECRET_PASS defined in secrets.h  
+    WiFi.mode(WIFI_STA);
+    WiFi.disconnect();
+    delay(2000);
+    Serial.print("Attempting to connect to " + String(SECRET_SSID));
+    WiFi.begin(SECRET_SSID, SECRET_PASS);
+    while (WiFi.status() != WL_CONNECTED)  {
+      delay(500);   // just sit here until you connect
+      Serial.print(".");
+      WiFi.begin(SECRET_SSID, SECRET_PASS);
     }
-    Serial.println("Connected to the WiFi network");
-    Serial.print("IP Address: ");
-    Serial.println (WiFi.localIP()); // prints out the device's IP address
+    Serial.print(" WiFi connected\r\nIP address: ");
+    Serial.println(WiFi.localIP());
 }
