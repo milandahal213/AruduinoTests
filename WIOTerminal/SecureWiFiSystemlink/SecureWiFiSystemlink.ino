@@ -1,3 +1,14 @@
+/*****************************
+create a secrets.h file with the following contents
+
+#define SECRET_SSID "your wifi ssid"
+#define SECRET_PASS "your wifi password"
+String  apikey="your systemlink api key";
+
+
+
+
+*****************************/
 #include "secrets.h"
 #include <rpcWiFi.h>
 #include <WiFiClientSecure.h>
