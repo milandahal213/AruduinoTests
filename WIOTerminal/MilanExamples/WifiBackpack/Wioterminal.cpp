@@ -188,7 +188,7 @@ else if(lib=="wifi"){
         _ret="Connected";
         break;
       
-  case 2: //"general get"
+  case 2: //"general get"  work in progress
     line="";
      _url=(const char*) myObject["arg"][0];
 
@@ -226,7 +226,7 @@ else if(lib=="wifi"){
         client.println("Host: " + String(_host));
         
         client.println("Content-type: application/json");
-        client.println("AppKey:92f871d8-c3bd-4fd7-8fab-ee50e1fbd0e5");
+        client.println("AppKey:....."); //sorry had to hide this
         client.println( "Connection: close");
         client.println();
         timeout = millis();
