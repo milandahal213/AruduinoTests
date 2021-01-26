@@ -1,4 +1,4 @@
-#include "secrets.h"
+#include "secrets1.h"
 #include <rpcWiFi.h>
 #include <WiFiClientSecure.h>
 #include <HTTPClient.h>
@@ -18,8 +18,8 @@ void setup() {
 }
 
 void loop() {
-    PostAT("Variables","site");
-    GetReply();
+    //PostAT("Variables","site");
+    //GetReply();
     GetAT();
     GetReply();
     delay(10*1000);
@@ -46,7 +46,7 @@ void Connect(){
 void GetAT() {
 
     Serial.println("\nStarting connection to server...");
-    if (!client.connect(host, port)) {
+    if (!client.connect("api.airtable.com", 443)) {
         Serial.println("Connection failed!");
         Serial.println("Waiting 5 seconds before retrying...");
         delay(5000);
@@ -54,7 +54,7 @@ void GetAT() {
     } 
     Serial.println("Connected to server!");
         // Make a HTTP request:
-    client.println("GET /v0/"+ BaseId+"/Table%201 HTTP/1.0");
+    client.println("GET /v0/"+ BaseId+"/Table HTTP/1.1");
     client.println("Host: api.airtable.com");
     client.println("Content-type:application/json"); 
     client.println("Accept: application/json"); 
@@ -74,7 +74,7 @@ void PostAT(String Field, String Value) {
     } 
     Serial.println("Connected to server!");
         // Make a HTTP request:
-    client.println("POST /v0/"+ BaseId+"/Table%201 HTTP/1.1");
+    client.println("POST /v0/"+ BaseId+"/Table HTTP/1.1");
     client.println("Host: api.airtable.com");
     client.println("Connection: keep-alive");
     client.println("Keep-Alive: timeout=10, max=100");

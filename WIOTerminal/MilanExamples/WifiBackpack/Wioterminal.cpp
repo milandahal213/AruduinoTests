@@ -4,6 +4,8 @@
 #include "TFT_eSPI.h"
 #include "RTC_SAMD51.h"
 #include <Arduino_JSON.h>
+#include <HTTPClient.h>
+
 
 #include <SPI.h>
 #include <Seeed_FS.h>
@@ -18,13 +20,15 @@ TFT_eSPI tft;
 DateTime now;
 RTC_SAMD51 rtc;
 
-//WiFiSSLClient client1;
 int i =1;
 String beginning="";
 String ending="";
 int prev_time, currenttime;
 int func=0;
 
+//to store wifi credentials
+const char *_ssid;
+const char *_password;
 
 
 Wioterminal::Wioterminal(int baudrate) {
@@ -170,19 +174,20 @@ else if(lib=="wifi"){
   colon=0;
   switch (func){
   case 1: //"Connect_wifi"
-  Serial.println("I am here");
-    WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
-    while (WiFi.status() != WL_CONNECTED)
-    {
-      Serial.println((const char*) myObject["arg"][0]);
-      Serial.println((const char*) myObject["arg"][1]);
-        WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
-       
-    }
-    Serial.println("Connected");
-    _ret="Connected";
-    break;
-  
+        _ssid=(const char*) myObject["arg"][0];
+        _password=(const char*) myObject["arg"][1];
+        WiFi.begin(_ssid,_password);
+        while (WiFi.status() != WL_CONNECTED)
+          {
+          Serial.println(_ssid);
+          Serial.println(_password);
+          WiFi.begin(_ssid,_password);
+           
+        }
+        Serial.println("Connected");
+        _ret="Connected";
+        break;
+      
   case 2: //"general get"
     line="";
      _url=(const char*) myObject["arg"][0];
@@ -217,7 +222,7 @@ else if(lib=="wifi"){
           Serial1.println("connection failed");
           tft.drawString("Connection failed",50,10);
           }
-        client.println("GET " + String(_url) +" HTTP/1.0");
+        client.println("GET " + String(_url) +" HTTP/1.1");
         client.println("Host: " + String(_host));
         
         client.println("Content-type: application/json");
@@ -283,47 +288,104 @@ else if(lib=="wifi"){
       break;
 
       case 4: //set airtable
-        appKey=(const char*) myObject["arg"][0];
-        BaseId=(const char*) myObject["arg"][1];
-        _ret="True";
-        
-        break;
+          appKey=(const char*) myObject["arg"][0];
+          BaseId=(const char*) myObject["arg"][1];
+          _ret="True";
+          break;
 
       case 5: //get airtable
           if (!client.connect("api.airtable.com", 443)) {
-                delay(2000);
-                break;
-                } 
+              Serial.println("Connection failed!");
+              delay(5000);
+              return;
+              } 
           Serial.println("Connected to server!");
-          client.println("GET /v0/"+ BaseId+"/" + String((const char*) myObject["arg"][0]) + "HTTP/1.0");
+          // Make a HTTP request:
+          client.println("GET /v0/"+ BaseId +"/" + (const char*) myObject["arg"][0] +" HTTP/1.1");
           client.println("Host: api.airtable.com");
           client.println("Content-type:application/json"); 
           client.println("Accept: application/json"); 
           client.println("Authorization: Bearer " + appKey); 
           client.println("Connection: close");
           client.println();
-          while (client.available() == 0) {
-            if (millis() - timeout > 5000) {
-              _ret=">>> Client Timeout !";
-              client.stop();
-              break;
+          while (client.connected()) {
+              line = client.readStringUntil('\n');
+              if (line == "\r") {
+                  Serial.println("headers received");
+                  break;
+                }
               }
-            }
-          taketime = millis();
-          while (client.available())
-            {
-            line+= client.readStringUntil('\r');
-            }
-        _ret+=line;
-        break;
+          while (client.available()) {
+            char c = client.read();
+            if (c == '\n') {
+                Serial.write('\r');
+                }
+              line+=c;
+              }
+          client.stop();
+          _ret=line;
+          Serial.println(_ret);
+           break;
 
 
       case 6: //put airtable
-      break;
 
+        Field=String((const char*) myObject["arg"][1]);
+        Value=String((const char*) myObject["arg"][2] );
+        data= "{\"records\":[{\"fields\":{\""+Field+ "\":\"" +Value+"\"}}]}";
+          if (!client.connect("api.airtable.com", 443)) {
+              Serial.println("Connection failed!");
+              delay(5000);
+              return;
+              } 
+          Serial.println("Connected to server!");
+            // Make a HTTP request:
+          client.println("POST /v0/"+ BaseId +"/" + (const char*) myObject["arg"][0] +" HTTP/1.1");
+          client.println("Host: api.airtable.com");
+          client.println("Connection: keep-alive");
+          client.println("Keep-Alive: timeout=10, max=100");
+          client.println("Content-Type: application/json");
+       
+          client.print("Content-Length: ");
+          client.println(data.length());
+          client.println("Authorization: Bearer " + appKey);
+          client.println("Accept: application/json");
+      
+          client.println();
+          client.println(data);
+
+          while (client.connected()) {
+              line = client.readStringUntil('\n');
+              if (line == "\r") {
+                  Serial.println("headers received");
+                  break;
+                }
+              }
+          while (client.available()) {
+            char c = client.read();
+            if (c == '\n') {
+                Serial.write('\r');
+                }
+              line+=c;
+              }
+          client.stop();
+          _ret=line;
+          Serial.println(_ret);
+          break;
       
     default: 
       break;
     }
   }
+}
+
+
+void wifi_connect(){
+    while(WiFi.status() != WL_CONNECTED)
+        {
+        Serial.println(_ssid);
+        Serial.println(_password);
+        WiFi.begin(_ssid,_password);  
+        }
+        Serial.println("Connected");
 }

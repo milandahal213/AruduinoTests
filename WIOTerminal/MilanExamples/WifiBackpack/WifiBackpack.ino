@@ -3,13 +3,10 @@
 
 Wioterminal test(115200);
 
- void setup() {
+void setup() {
   test.start();
-
 }
 
 void loop() {
    test.lookout();
-
-
-  }
+}

@@ -60,8 +60,23 @@ class screen:
     def fillRoundRect(self, x1,y1,x2,y2,r,c):
         self.ret=self.call_function("graphics",13,[x1,y1,x2,y2,r,c])#"fillRoundRect"
         return self.ret
-
-  
+    
+    def connectWifi(self, ssid, pwd):
+        self.ret=self.call_function("wifi",1,[ssid,pwd])
+        return self.ret
+        
+        
+    def setAirtable(self, AppKey, baseID):
+        self.ret=self.call_function("wifi",4,[AppKey,baseID]) # set credentials for Airtable
+        return self.ret
+    
+    def getAirtable(self, table):
+        self.ret=self.call_function("wifi",5,[table]) #get value from Airtable
+        return self.ret
+    
+    def postAirtable(self, table, field, value):
+        self.ret=self.call_function("wifi", 6,[table,field, value]) #putvalue on Airtable field
+        return self.ret
 
     def call_function(self, library, fname,arg):
         try:
@@ -75,20 +90,21 @@ class screen:
             utime.sleep(0.01)
             for _index in range(self._iter-1):
                 self.s.write(("\""+str(arg[_index])+"\",").encode())
-                utime.sleep(0.001)
+                utime.sleep(0.01)
             self.s.write(("\""+ str(arg[self._iter-1])+"\"").encode())
             utime.sleep(0.01)
             self.s.write("]}".encode())
             utime.sleep(0.01)
             self.s.write("done".encode())
+            utime.sleep(0.01)
             self._waitACK=self.s.read(100)
             while(self._waitACK.decode("UTF-8").find("True")<0 and self._waitACK.decode("UTF-8").find("False")<0):
                 self._waitACK+= self.s.read(100)
-            print(self._waitACK.decode("UTF-8"))
             if(self._waitACK.decode("UTF-8").find("True")<0):
                 raise Exception("Arduino Error")
             else:
-                return True
+                return self._waitACK[:-6].decode("UTF-8")
+            utime.sleep(0.1)
         except:
             raise Exception("Python Error")
 

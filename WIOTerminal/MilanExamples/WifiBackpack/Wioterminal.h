@@ -24,12 +24,13 @@ class Wioterminal
     void lookout1();
     void lookout();
     void decode_message(String request);
+
+
+
     private:
     String request;
     String _ret;
     int _baudrate;
-    const char *_ssid;
-    const char *_password;
     String _wifi;
     const char *host;
     int _port;
@@ -45,6 +46,12 @@ class Wioterminal
       //to store airtable credentials
       String appKey="";
       String BaseId="";
+
+
+      //for airtable values
+      String Field;
+      String Value;
+      String data;
       
   unsigned long timeout;
   uint32_t taketime;
