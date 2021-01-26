@@ -72,8 +72,9 @@ void Wioterminal::lookout(){
          _ret=" ";
          request= String(ending);
          request=request.substring(0,request.length()-4);  //4 is to remove "done"
-         decode_message(request);
          Serial.println(request);
+         decode_message(request);
+         
          _ret=_ret+"True";
         Serial1.println(_ret);
       }
@@ -169,16 +170,20 @@ else if(lib=="wifi"){
   colon=0;
   switch (func){
   case 1: //"Connect_wifi"
+  Serial.println("I am here");
     WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
     while (WiFi.status() != WL_CONNECTED)
     {
+      Serial.println((const char*) myObject["arg"][0]);
+      Serial.println((const char*) myObject["arg"][1]);
         WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
        
     }
+    Serial.println("Connected");
     _ret="Connected";
     break;
   
-  case 2: //"get"
+  case 2: //"general get"
     line="";
      _url=(const char*) myObject["arg"][0];
 
@@ -269,7 +274,54 @@ else if(lib=="wifi"){
       else{
         _ret="Use http or https with your url";
         }
+        break;
+
+
+      case 3: //general put
+
+
       break;
+
+      case 4: //set airtable
+        appKey=(const char*) myObject["arg"][0];
+        BaseId=(const char*) myObject["arg"][1];
+        _ret="True";
+        
+        break;
+
+      case 5: //get airtable
+          if (!client.connect("api.airtable.com", 443)) {
+                delay(2000);
+                break;
+                } 
+          Serial.println("Connected to server!");
+          client.println("GET /v0/"+ BaseId+"/" + String((const char*) myObject["arg"][0]) + "HTTP/1.0");
+          client.println("Host: api.airtable.com");
+          client.println("Content-type:application/json"); 
+          client.println("Accept: application/json"); 
+          client.println("Authorization: Bearer " + appKey); 
+          client.println("Connection: close");
+          client.println();
+          while (client.available() == 0) {
+            if (millis() - timeout > 5000) {
+              _ret=">>> Client Timeout !";
+              client.stop();
+              break;
+              }
+            }
+          taketime = millis();
+          while (client.available())
+            {
+            line+= client.readStringUntil('\r');
+            }
+        _ret+=line;
+        break;
+
+
+      case 6: //put airtable
+      break;
+
+      
     default: 
       break;
     }

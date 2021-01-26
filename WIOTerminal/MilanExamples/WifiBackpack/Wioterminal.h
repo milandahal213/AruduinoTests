@@ -41,6 +41,11 @@ class Wioterminal
     char _host[100];
     char _path[100];
     String line;
+    
+      //to store airtable credentials
+      String appKey="";
+      String BaseId="";
+      
   unsigned long timeout;
   uint32_t taketime;
 
