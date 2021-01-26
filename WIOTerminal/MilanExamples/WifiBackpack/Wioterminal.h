@@ -21,8 +21,8 @@ class Wioterminal
     void checkwifi();
     void connectwifi();
     void tft_setup();
-    void lookout();
     void lookout1();
+    void lookout();
     void decode_message(String request);
     private:
     String request;

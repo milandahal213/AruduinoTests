@@ -7,13 +7,10 @@
 
 #include <SPI.h>
 #include <Seeed_FS.h>
-#include "SD/Seeed_SD.h"
  
-File myFile;
 
 WiFiClientSecure client;
 WiFiClient client1;
-JSONVar wifi_cred;
 
 #define LCD_BACKLIGHT (72Ul) // Control Pin of LCD
 
@@ -23,97 +20,24 @@ RTC_SAMD51 rtc;
 
 //WiFiSSLClient client1;
 int i =1;
-String check="";
 String beginning="";
 String ending="";
-String loopCount="";
 int prev_time, currenttime;
-String data="";
 int func=0;
 
-const unsigned char wifi_connected[] = {
-0x00  , 0x00  , 0x00  , 0x00  ,0x00  , 0x00  , 0x00  , 0x00  ,
-0x00  , 0xF8  , 0x1F  , 0x00  ,0x80  , 0xFF  , 0xFF  , 0x01  ,
-0xE0  , 0xFF  , 0xFF  , 0x07  ,0xF8  , 0xFF  , 0xFF  , 0x1F  ,
-0xFC  , 0x01  , 0x80  , 0x3F  ,0x7E  , 0x00  , 0x00  , 0x7E  ,
-0x1F  , 0x00  , 0x00  , 0xF8  ,0x1F  , 0x00  , 0x00  , 0xF8  ,
-0x07  , 0xE0  , 0x07  , 0xE0  ,0x06  , 0xFC  , 0x3F  , 0x60  ,
-0xC0  , 0xFF  , 0xFF  , 0x03  ,0xE0  , 0xFF  , 0xFF  , 0x07  ,
-0xF0  , 0xFF  , 0xFF  , 0x0F  ,0xF0  , 0x07  , 0xE0  , 0x0F  ,
-0xF0  , 0x03  , 0xC0  , 0x0F  ,0xF0  , 0x01  , 0x80  , 0x0F  ,
-0x70  , 0x00  , 0x00  , 0x0E  ,0x60  , 0xC0  , 0x03  , 0x06  ,
-0x00  , 0xF8  , 0x1F  , 0x00  ,0x00  , 0xFE  , 0x7F  , 0x00  ,
-0x00  , 0xFC  , 0x3F  , 0x00  ,0x00  , 0xF8  , 0x1E  , 0x00  ,
-0x00  , 0xE0  , 0x07  , 0x00  ,0x00  , 0xE0  , 0x07  , 0x00  ,
-0x00  , 0xC0  , 0x03  , 0x00  ,0x00  , 0xC0  , 0x03  , 0x00  ,
-0x00  , 0x80  , 0x01  , 0x00  ,0x00  , 0x80  , 0x01  , 0x00  ,
-0x00  , 0x80  , 0x01  , 0x00  ,0x00  , 0x00  , 0x00  , 0x00  ,
-  };  
 
-const unsigned char wifi_disconnected[]={
-  0x00  , 0x00  , 0x00  , 0x00  ,0x00  , 0x00  , 0x00  , 0x00  ,
-0x00  , 0x08  , 0x10  , 0x00  ,0x80  , 0x0F  , 0xF0  , 0x01  ,
-0xE0  , 0x0F  , 0xF0  , 0x07  ,0xF8  , 0x0F  , 0xF0  , 0x1F  ,
-0xFC  , 0x01  , 0x80  , 0x3F  ,0x7E  , 0x00  , 0x00  , 0x7E  ,
-0x1F  , 0x00  , 0x00  , 0xF8  ,0x1F  , 0x00  , 0x00  , 0xF8  ,
-0x07  , 0x00  , 0x00  , 0xE0  ,0x06  , 0x0C  , 0x30  , 0x60  ,
-0xC0  , 0x0F  , 0xF0  , 0x03  ,0xE0  , 0x0F  , 0xF0  , 0x07  ,
-0xF0  , 0x0F  , 0xF0  , 0x0F  ,0xF0  , 0x07  , 0xE0  , 0x0F  ,
-0xF0  , 0x03  , 0xC0  , 0x0F  ,0xF0  , 0x01  , 0x80  , 0x0F  ,
-0x70  , 0x00  , 0x00  , 0x0E  ,0x60  , 0x00  , 0x00  , 0x06  ,
-0x00  , 0x08  , 0x10  , 0x00  ,0x00  , 0x0E  , 0x70  , 0x00  ,
-0x00  , 0x0C  , 0x30  , 0x00  ,0x00  , 0xF8  , 0x1E  , 0x00  ,
-0x00  , 0xE0  , 0x07  , 0x00  ,0x00  , 0xE0  , 0x07  , 0x00  ,
-0x00  , 0xC0  , 0x03  , 0x00  ,0x00  , 0xC0  , 0x03  , 0x00  ,
-0x00  , 0x80  , 0x01  , 0x00  ,0x00  , 0x80  , 0x01  , 0x00  ,
-0x00  , 0x80  , 0x01  , 0x00  ,0x00  , 0x00  , 0x00  , 0x00  ,
-};
 
 Wioterminal::Wioterminal(int baudrate) {
     _baudrate=baudrate;
 }
 
 void Wioterminal::start() {
-    while (!Serial) {
-    Serial.begin(_baudrate);
-    };
+
+  Serial.begin(115200);
+  Serial1.begin(115200);
     rtc.begin();
     tft_setup();
-    if (!SD.begin(SDCARD_SS_PIN, SDCARD_SPI)) {
-      tft.drawString("Insert SD card",10,10);
-  
-    }
-    checkwifi();
-}
-
-void Wioterminal::checkwifi(){
-  if(WiFi.status() != WL_CONNECTED)
-        { 
-          tft.drawXBitmap(260,13, wifi_disconnected, 32, 32, TFT_RED);
-          connectwifi();
-         }
-}
-
-void Wioterminal::connectwifi(){
-  myFile = SD.open("wifi.txt", FILE_READ);
-    if (myFile) {
-        while (myFile.available()) {
-        _wifi+=char(myFile.read());
-      }
-       wifi_cred=JSON.parse(_wifi);
-      myFile.close();
-      _ssid=(const char*) wifi_cred["ssid"];
-      _password=(const char*) wifi_cred["password"];
-        while (WiFi.status() != WL_CONNECTED)
-        {
-          WiFi.begin(_ssid,_password);
-         }
-      tft.drawXBitmap(260,13, wifi_connected, 32, 32, TFT_WHITE);
-     } 
-    else {
-      
-    }
-}
+ }
 
 void Wioterminal::tft_setup(){
   tft.begin();
@@ -132,28 +56,29 @@ void Wioterminal::tft_setup(){
 
 
 void Wioterminal::lookout(){
-  if (Serial.available() > 0){
-    
+
+  if (Serial1.available()){
     prev_time=rtc.now().unixtime();
     do{
-      beginning=Serial.readString();
+      beginning=Serial1.readString();
       ending+=beginning;
       }
     while(ending.indexOf("done")<0&&(rtc.now().unixtime()-prev_time)<2);   
     if(ending.indexOf("done")<0)
       {
-        Serial.write("False");
+        Serial1.write("False");
       }
     else {
          _ret=" ";
          request= String(ending);
          request=request.substring(0,request.length()-4);  //4 is to remove "done"
          decode_message(request);
+         Serial.println(request);
          _ret=_ret+"True";
-        Serial.println(_ret);
+        Serial1.println(_ret);
       }
       ending="";
-      Serial.flush();
+      Serial1.flush();
     }
 }
 void Wioterminal::decode_message(String request){
@@ -163,7 +88,6 @@ void Wioterminal::decode_message(String request){
   
   //request=request.substring(0,request.length()-4); //4 is to remove "done"
   JSONVar myObject = JSON.parse(request);
-
   func = atoi((const char*) myObject["function"]);
   lib=myObject["lib"];
 
@@ -245,14 +169,6 @@ else if(lib=="wifi"){
   colon=0;
   switch (func){
   case 1: //"Connect_wifi"
-    myFile = SD.open("wifi.txt", FILE_WRITE);
-    if (myFile) {
-
-      myFile.println( "{\"ssid\":\""+String((const char*)myObject["arg"][0]) + "\",\"password\":\"" + String((const char*)myObject["arg"][1]) + "\"}" );
-      myFile.close();
-       } 
-    else {
-      }
     WiFi.begin((const char*) myObject["arg"][0],(const char*) myObject["arg"][1]);
     while (WiFi.status() != WL_CONNECTED)
     {
@@ -293,7 +209,7 @@ else if(lib=="wifi"){
         _port=443;
         if (!client.connect(_host, _port))
           {
-          Serial.println("connection failed");
+          Serial1.println("connection failed");
           tft.drawString("Connection failed",50,10);
           }
         client.println("GET " + String(_url) +" HTTP/1.0");
@@ -325,7 +241,7 @@ else if(lib=="wifi"){
         _port=80;
         if (!client1.connect(_host, _port))
           {
-          Serial.println("connection failed");
+          Serial1.println("connection failed");
           tft.drawString("Connectio failed",50,10);
           }
         client1.println("GET " + String(_url) +" HTTP/1.0");
