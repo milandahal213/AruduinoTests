@@ -8,7 +8,7 @@
 
 
 #include <SPI.h>
-#include <Seeed_FS.h>
+//#include <Seeed_FS.h>
  
 
 WiFiClientSecure client;
