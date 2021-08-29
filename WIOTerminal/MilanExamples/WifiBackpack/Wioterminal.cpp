@@ -4,12 +4,7 @@
 #include "TFT_eSPI.h"
 #include "RTC_SAMD51.h"
 #include <Arduino_JSON.h>
-#include <HTTPClient.h>
 
-
-#include <SPI.h>
-#include <Seeed_FS.h>
- 
 
 WiFiClientSecure client;
 WiFiClient client1;
