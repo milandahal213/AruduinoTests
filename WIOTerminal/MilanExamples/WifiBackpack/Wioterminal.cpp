@@ -6,6 +6,10 @@
 #include <Arduino_JSON.h>
 
 
+#include <SPI.h>
+//#include <Seeed_FS.h>
+ 
+
 WiFiClientSecure client;
 WiFiClient client1;
 
